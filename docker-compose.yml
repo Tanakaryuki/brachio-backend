@@ -1,0 +1,33 @@
+version: '3.9' 
+services:
+  db:
+    container_name: sample-db
+    image: 'mysql:8.2.0'
+    volumes: 
+      - sample_db_data:/var/lib/mysql
+    env_file:
+      - ./env/db.env
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 30s
+      retries: 10
+      start_period: 10s
+  api:
+    container_name: sample-api
+    build: .
+    volumes:
+      - type: bind 
+        source: ./app
+        target: /app
+    ports:
+      - 5050:5050
+    env_file:
+      - ./env/api.env
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  sample_db_data:
