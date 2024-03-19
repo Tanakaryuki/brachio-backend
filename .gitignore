@@ -21,4 +21,5 @@
 go.work
 
 app/tmp
-env/*.env
+app/env/*.env
+app/serviceAccountKey.json
