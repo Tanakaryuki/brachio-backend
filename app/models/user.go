@@ -34,7 +34,7 @@ func GetAllUsers() ([]User, error) {
 
 func GetUserById(id string) (*User, error) {
 	user := User{}
-	if err := db.DB.Where("user_id = ?", id).First(&user).Error; err != nil {
+	if err := db.DB.Where("github_id = ?", id).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

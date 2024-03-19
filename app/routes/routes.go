@@ -8,4 +8,5 @@ func RegisterRoutes(server *echo.Echo) {
 	server.POST("/users", createUser)
 	server.GET("/users", getAllUsers)
 	server.GET("/users/:userId", getUserById)
+	server.GET("/pets/:userId", getPetsByUserId)
 }
