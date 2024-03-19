@@ -35,7 +35,7 @@ func main() {
 	}))
 
 	server.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "HelloWorld")
+		return c.String(http.StatusOK, "Hello World!?!?!?!?!?!?!?!?")
 	})
 	routes.RegisterRoutes(server)
 
