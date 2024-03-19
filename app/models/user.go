@@ -42,3 +42,14 @@ func GetUserById(id string) (*User, error) {
 	}
 	return &user, nil
 }
+
+func GetUserByUserId(id string) (*User, error) {
+	user := User{}
+	if err := db.DB.Where("user_id = ?", id).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}

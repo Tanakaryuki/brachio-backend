@@ -103,3 +103,19 @@ func UpDatePet(UserID string, Language string, FriendshipLevel int) error {
 	}
 	return nil
 }
+
+func FeedPet(pet *Pet) error {
+	if pet.HungerLevel != 100 {
+		pet.HungerLevel += 10
+		if pet.HungerLevel > 100 {
+			pet.HungerLevel = 100
+		}
+		pet.BaitsNum -= 1
+		if err := db.DB.Model(&pet).Where("id = ?", pet.ID).Updates(pet).Error; err != nil {
+			return err
+		}
+		return nil
+	} else {
+		return errors.New("ペットはお腹いっぱいです。")
+	}
+}
