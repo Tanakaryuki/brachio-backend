@@ -146,8 +146,10 @@ func UpdateCommit(github_id string) error {
 			for _, commit := range event.Payload.Commits {
 				if event, err := models.GetEventBySHA(commit.SHA); err == nil {
 					if event == nil {
-						if err := GetCommitDetailByURL(commit.URL, commit.Author.Name); err != nil {
-							return err
+						if github_id == commit.Author.Name {
+							if err := GetCommitDetailByURL(commit.URL, commit.Author.Name); err != nil {
+								return err
+							}
 						}
 						err = models.CreateEvent(&models.Event{
 							UserID: github_id,
