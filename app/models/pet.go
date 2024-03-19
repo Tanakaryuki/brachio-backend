@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"log"
 
 	"github.com/Tanakaryuki/brachio-backend/db"
 	"github.com/labstack/echo/v4"
@@ -33,17 +32,13 @@ func CreateEvent(event *Event) error {
 }
 
 func GetEventBySHA(sha string) (*Event, error) {
-	log.Print(sha)
 	event := Event{}
 	if err := db.DB.Where("sha = ?", sha).First(&event).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Println("3")
 			return nil, nil
 		}
-		log.Println("2")
 		return nil, err
 	}
-	log.Println("1")
 	return &event, nil
 }
 
@@ -102,7 +97,6 @@ func UpDatePet(UserID string, Language string, FriendshipLevel int) error {
 		} else {
 			pet.HungerLevel = hoge.HungerLevel + 10
 		}
-		log.Println(pet)
 		if err := db.DB.Model(&pet).Where("user_id = ? AND language = ?", UserID, Language).Updates(pet).Error; err != nil {
 			return err
 		}

@@ -3,7 +3,6 @@ package github
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -145,13 +144,9 @@ func UpdateCommit(github_id string) error {
 	for _, event := range events {
 		if event.Type == "PushEvent" {
 			for _, commit := range event.Payload.Commits {
-				// log.Print(commit)
 				if event, err := models.GetEventBySHA(commit.SHA); err == nil {
-					// log.Print(event)
 					if event == nil {
-						log.Print(commit.URL, commit.Author.Name, github_id, commit.SHA)
 						if err := GetCommitDetailByURL(commit.URL, commit.Author.Name); err != nil {
-							log.Println("4")
 							return err
 						}
 						err = models.CreateEvent(&models.Event{
@@ -170,7 +165,6 @@ func UpdateCommit(github_id string) error {
 }
 
 func GetCommitDetailByURL(url string, UserID string) error {
-	log.Println(url)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
@@ -185,8 +179,6 @@ func GetCommitDetailByURL(url string, UserID string) error {
 
 	var file schemas.CommitInfo
 	if err := json.NewDecoder(res.Body).Decode(&file); err != nil {
-		log.Println("7")
-		log.Println(err)
 		return err
 	}
 	for _, file := range file.Files {
@@ -194,11 +186,9 @@ func GetCommitDetailByURL(url string, UserID string) error {
 		lastPart := parts[len(parts)-1]
 		lastPart = "." + lastPart
 		Language := ExtensionToLanguage[lastPart]
-		log.Println(lastPart, Language, file.Filename)
 
 		if Language != "" {
 			if err := models.UpDatePet(UserID, Language, file.Changes); err != nil {
-				log.Println("8")
 				return err
 			}
 		}
