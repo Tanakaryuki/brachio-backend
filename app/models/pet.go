@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"github.com/Tanakaryuki/brachio-backend/db"
 	"github.com/labstack/echo/v4"
@@ -82,6 +83,58 @@ func UpDatePet(UserID string, Language string, FriendshipLevel int) error {
 		if err := db.DB.Create(pet).Error; err != nil {
 			return err
 		}
+
+		go func() {
+			timer := time.NewTimer(10 * time.Second)
+			defer timer.Stop()
+
+			for {
+				select {
+				case <-timer.C:
+					pet, err := DecreaseHungerLevel(UserID, Language)
+					if err != nil {
+						continue
+					}
+					if pet.HungerLevel == 0 {
+						ResetPet(UserID, Language)
+						return
+					}
+					timer.Reset(10 * time.Second)
+				}
+			}
+		}()
+	} else if hoge.HungerLevel == 0 {
+		pet := &Pet{
+			UserID:          UserID,
+			Language:        Language,
+			HungerLevel:     100,
+			FriendshipLevel: FriendshipLevel,
+			EscapeNum:       hoge.EscapeNum,
+			BaitsNum:        0,
+		}
+		if err := db.DB.Model(&pet).Where("user_id = ? AND language = ?", UserID, Language).Select("*").Updates(pet).Error; err != nil {
+			return err
+		}
+
+		go func() {
+			timer := time.NewTimer(10 * time.Second)
+			defer timer.Stop()
+
+			for {
+				select {
+				case <-timer.C:
+					pet, err := DecreaseHungerLevel(UserID, Language)
+					if err != nil {
+						continue
+					}
+					if pet.HungerLevel == 0 {
+						ResetPet(UserID, Language)
+						return
+					}
+					timer.Reset(10 * time.Minute)
+				}
+			}
+		}()
 	} else {
 		pet := &Pet{
 			UserID:          UserID,
@@ -96,6 +149,9 @@ func UpDatePet(UserID string, Language string, FriendshipLevel int) error {
 			pet.BaitsNum = hoge.BaitsNum + 1
 		} else {
 			pet.HungerLevel = hoge.HungerLevel + 10
+			if pet.HungerLevel > 100 {
+				pet.HungerLevel = 100
+			}
 		}
 		if err := db.DB.Model(&pet).Where("user_id = ? AND language = ?", UserID, Language).Updates(pet).Error; err != nil {
 			return err
@@ -118,4 +174,31 @@ func FeedPet(pet *Pet) error {
 	} else {
 		return errors.New("ペットはお腹いっぱいです。")
 	}
+}
+
+func DecreaseHungerLevel(UserID string, Language string) (*Pet, error) {
+	pet, err := GetPetByLanguage(UserID, Language)
+	if err != nil {
+		return nil, err
+	}
+	pet.HungerLevel -= 1
+	if err := db.DB.Model(&pet).Where("user_id = ? AND language = ?", UserID, Language).Updates(pet).Error; err != nil {
+		return nil, err
+	}
+	return pet, nil
+}
+
+func ResetPet(UserID string, Language string) error {
+	pet, err := GetPetByLanguage(UserID, Language)
+	if err != nil {
+		return err
+	}
+	pet.HungerLevel = 0
+	pet.FriendshipLevel = 0
+	pet.BaitsNum = 0
+	pet.EscapeNum += 1
+	if err := db.DB.Model(&pet).Where("user_id = ? AND language = ?", UserID, Language).Select("*").Updates(pet).Error; err != nil {
+		return err
+	}
+	return nil
 }
