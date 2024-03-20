@@ -1,6 +1,7 @@
 version: '3.9' 
 services:
   db:
+    platform: linux/amd64
     container_name: sample-db
     image: 'mysql:8.2.0'
     volumes: 
@@ -16,12 +17,9 @@ services:
       retries: 10
       start_period: 10s
   api:
+    platform: linux/amd64
     container_name: sample-api
     build: .
-    volumes:
-      - type: bind 
-        source: ./app
-        target: /app
     ports:
       - 5050:5050
     env_file:

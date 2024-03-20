@@ -14,6 +14,7 @@ var (
 	MYSQL_DATABASE      string
 	MYSQL_ROOT_PASSWORD string
 	TZ                  string
+	MYSQL_HOST          string
 )
 
 func LoadEnv() {
@@ -27,5 +28,6 @@ func LoadEnv() {
 	DB_NAME = os.Getenv("DB_NAME")
 	MYSQL_DATABASE = os.Getenv("MYSQL_DATABASE")
 	MYSQL_ROOT_PASSWORD = os.Getenv("MYSQL_ROOT_PASSWORD")
+	MYSQL_HOST = os.Getenv("MYSQL_HOST")
 	TZ = os.Getenv("TZ")
 }

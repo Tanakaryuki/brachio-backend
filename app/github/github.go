@@ -65,6 +65,7 @@ var ExtensionToLanguage = map[string]string{
 	".cs":     "Smalltalk",
 	".swift":  "Swift",
 	".ts":     "TypeScript",
+	".tsx":    "TypeScript",
 	".vbs":    "Visual Basic",
 	".xquery": "XQuery",
 	".v":      "Coq",
